@@ -17,7 +17,6 @@ using System.Collections.Generic;
 
 namespace PixelVisionSDK
 {
-
     /// <summary>
     ///     The ILoad interface allows a standard
     ///     API when loading de-serialized data into a class. It works on the concept
@@ -39,7 +38,5 @@ namespace PixelVisionSDK
         ///     value.
         /// </param>
         void DeserializeData(Dictionary<string, object> data);
-
     }
-
 }

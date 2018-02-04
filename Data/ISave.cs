@@ -15,7 +15,6 @@
 
 namespace PixelVisionSDK
 {
-
     /// <summary>
     ///     The ISave internal provides the API for
     ///     serializing data into a string from a class that implements the
@@ -26,7 +25,6 @@ namespace PixelVisionSDK
     /// </summary>
     public interface ISave
     {
-        
         bool ignore { get; }
         
         /// <summary>
@@ -37,7 +35,5 @@ namespace PixelVisionSDK
         /// <returns>
         /// </returns>
         string SerializeData();
-
     }
-
 }
