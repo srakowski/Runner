@@ -18,6 +18,7 @@ using PixelVisionRunner.Services;
 using PixelVisionRunner.Utils;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -37,16 +38,20 @@ namespace PixelVisionRunner
 
         private LoadService loadService;
 
+        private IInputFactory inputFactory;
+
         public Runner(
             SimplePromise<Stream> openPv8,
             IDisplayTarget displayTarget,
             ITextureFactory textureFactory,
-            IColorFactory colorFactory)
+            IColorFactory colorFactory,
+            IInputFactory inputFactory)
         {
             this.openPv8 = openPv8;
             this.displayTarget = displayTarget;
             this.loadService = new LoadService(textureFactory, colorFactory);
             this.colorFactory = colorFactory;
+            this.inputFactory = inputFactory;
         }
 
         public void Initialize(IEnumerable<string> addOnChips = null)
@@ -133,6 +138,7 @@ namespace PixelVisionRunner
         private Unit StartEngine(Unit _)
         {
             ResetResolution(engine.displayChip.width, engine.displayChip.height);
+            ConfigureInput();
             engine.RunGame();
             return Unit.Value;
         }
@@ -163,6 +169,22 @@ namespace PixelVisionRunner
         {
             engine.displayChip.ResetResolution(width, height);
             displayTarget.ResetResolution(width, height, fullScreen);
+        }
+
+        private void ConfigureInput()
+        {
+            var activeControllerChip = engine.controllerChip;
+
+            activeControllerChip.RegisterKeyInput(inputFactory.CreateKeyInput());
+
+            var buttons = Enum.GetValues(typeof(Buttons)).Cast<Buttons>();
+            foreach (var button in buttons)
+            {
+                activeControllerChip.UpdateControllerKey(0, inputFactory.CreateButtonBinding(0, button));
+                activeControllerChip.UpdateControllerKey(1, inputFactory.CreateButtonBinding(1, button));
+            }
+
+            activeControllerChip.RegisterMouseInput(inputFactory.CreateMouseInput());
         }
     }
 }
